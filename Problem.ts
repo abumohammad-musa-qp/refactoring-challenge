@@ -1,145 +1,91 @@
-// Customer Type Enum
-enum CustomerType {
-  REGULAR = "REGULAR",
-  PREMIUM = "PREMIUM",
-  VIP = "VIP",
-}
+// The OrderManagementSystem handles customer orders, calculates prices, and applies discounts. However, the codebase is poorly designed, making it hard to maintain and extend.
 
-// Discount Strategy Interface
-interface DiscountStrategy {
-  calculateDiscount(amount: number): number;
-}
+class Customer {
+  name: string;
+  type: string; // "Regular", "Premium", "VIP"
+  discount: number;
 
-// Concrete Discount Strategies
-class RegularDiscount implements DiscountStrategy {
-  calculateDiscount(amount: number): number {
-    return amount * 0.05;
+  constructor(name: string, type: string) {
+    this.name = name;
+    this.type = type;
+    this.setDiscount();
   }
-}
 
-class PremiumDiscount implements DiscountStrategy {
-  calculateDiscount(amount: number): number {
-    return amount * 0.1;
-  }
-}
-
-class VIPDiscount implements DiscountStrategy {
-  calculateDiscount(amount: number): number {
-    return amount * 0.2;
-  }
-}
-
-// Discount Factory
-class DiscountFactory {
-  static createDiscountStrategy(type: CustomerType): DiscountStrategy {
-    switch (type) {
-      case CustomerType.REGULAR:
-        return new RegularDiscount();
-      case CustomerType.PREMIUM:
-        return new PremiumDiscount();
-      case CustomerType.VIP:
-        return new VIPDiscount();
-      default:
-        throw new Error("Invalid customer type");
+  setDiscount(): void {
+    if (this.type === "Regular") {
+      this.discount = 0.05;
+    } else if (this.type === "Premium") {
+      this.discount = 0.1;
+    } else if (this.type === "VIP") {
+      this.discount = 0.2;
+    } else {
+      this.discount = 0;
     }
   }
 }
 
-// Customer class
-class Customer {
-  private readonly discountStrategy: DiscountStrategy;
+// Please do not refactor the order class
 
-  constructor(
-    private readonly name: string,
-    private readonly type: CustomerType
-  ) {
-    this.discountStrategy = DiscountFactory.createDiscountStrategy(type);
-  }
-
-  getName(): string {
-    return this.name;
-  }
-
-  getDiscount(amount: number): number {
-    return this.discountStrategy.calculateDiscount(amount);
-  }
-}
-
-// Order Item Interface
-interface OrderItem {
-  name: string;
-  price: number;
-}
-
-// Order class with improved structure
 class Order {
-  private readonly items: OrderItem[] = [];
-  private totalPrice: number = 0;
-  private discountedPrice: number = 0;
+  customer: Customer;
+  items: string[];
+  prices: number[];
+  totalPrice: number;
+  discountedPrice: number;
 
-  constructor(private readonly customer: Customer) {}
+  constructor(customer: Customer) {
+    this.customer = customer;
+    this.items = [];
+    this.prices = [];
+    this.totalPrice = 0;
+    this.discountedPrice = 0;
+  }
 
   addItem(item: string, price: number): void {
-    this.items.push({ name: item, price });
+    this.items.push(item);
+    this.prices.push(price);
     this.calculateTotal();
   }
 
-  private calculateTotal(): void {
-    this.totalPrice = this.items.reduce((sum, item) => sum + item.price, 0);
+  calculateTotal(): void {
+    this.totalPrice = this.prices.reduce((sum, price) => sum + price, 0);
     this.applyDiscount();
   }
 
-  private applyDiscount(): void {
-    const discount = this.customer.getDiscount(this.totalPrice);
-    this.discountedPrice = this.totalPrice - discount;
+  applyDiscount(): void {
+    this.discountedPrice =
+      this.totalPrice - this.totalPrice * this.customer.discount;
   }
 
-  getOrderSummary(): OrderSummary {
-    return {
-      customerName: this.customer.getName(),
-      items: this.items.map((item) => item.name),
-      totalPrice: this.totalPrice,
-      discountedPrice: this.discountedPrice,
-    };
+  printOrder(): void {
+    console.log(`Customer: ${this.customer.name}`);
+    console.log(`Items: ${this.items.join(", ")}`);
+    console.log(`Total Price: ${this.totalPrice}`);
+    console.log(`Discounted Price: ${this.discountedPrice}`);
   }
 }
 
-// Order Summary Interface
-interface OrderSummary {
-  customerName: string;
-  items: string[];
-  totalPrice: number;
-  discountedPrice: number;
-}
-
-// Order Management System with improved separation of concerns
+// Order Management System - Handles orders
 class OrderManagementSystem {
   static main(): void {
-    const customer = new Customer("John Doe", CustomerType.VIP);
+    const customer = new Customer("John Doe", "VIP");
     const order = new Order(customer);
 
     order.addItem("Laptop", 1000);
     order.addItem("Mouse", 50);
     order.addItem("Keyboard", 80);
 
-    const orderSummary = order.getOrderSummary();
-    OrderManagementSystem.printOrderSummary(orderSummary);
-    OrderManagementSystem.generateInvoice(orderSummary);
+    order.printOrder();
+
+    OrderManagementSystem.generateInvoice(order);
   }
 
-  private static printOrderSummary(summary: OrderSummary): void {
-    console.log(`Customer: ${summary.customerName}`);
-    console.log(`Items: ${summary.items.join(", ")}`);
-    console.log(`Total Price: ${summary.totalPrice}`);
-    console.log(`Discounted Price: ${summary.discountedPrice}`);
-  }
-
-  private static generateInvoice(summary: OrderSummary): void {
-    console.log("\nGenerating Invoice...");
-    console.log(`Customer: ${summary.customerName}`);
-    console.log(`Total: $${summary.totalPrice}`);
-    console.log(`Discounted Total: $${summary.discountedPrice}`);
-    console.log(`Items: ${summary.items.join(", ")}`);
+  static generateInvoice(order: Order): void {
+    console.log("Generating Invoice...");
+    console.log(`Customer: ${order.customer.name}`);
+    console.log(`Total: $${order.totalPrice}`);
+    console.log(`Discounted Total: $${order.discountedPrice}`);
+    console.log(`Items: ${order.items.join(", ")}`);
     console.log("Thank you for shopping with us!");
   }
 }
