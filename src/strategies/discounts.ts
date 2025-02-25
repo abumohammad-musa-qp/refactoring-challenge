@@ -1,5 +1,11 @@
 import { DiscountStrategy } from "../interfaces/DiscountStrategy";
 
+export class DefaultDiscount implements DiscountStrategy {
+  calculateDiscount(amount: number): number {
+    return 0;
+  }
+}
+
 export class RegularDiscount implements DiscountStrategy {
   calculateDiscount(amount: number): number {
     return amount * 0.05;

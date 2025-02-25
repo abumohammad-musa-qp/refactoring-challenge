@@ -4,6 +4,7 @@ import {
   RegularDiscount,
   PremiumDiscount,
   VIPDiscount,
+  DefaultDiscount,
 } from "../strategies/discounts";
 
 export class DiscountFactory {
@@ -16,7 +17,7 @@ export class DiscountFactory {
       case CustomerType.VIP:
         return new VIPDiscount();
       default:
-        throw new Error("Invalid customer type");
+        return new DefaultDiscount();
     }
   }
 }
