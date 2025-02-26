@@ -9,7 +9,7 @@ export class Customer {
     private readonly name: string,
     private readonly type: CustomerType
   ) {
-    this.discountStrategy = DiscountFactory.createDiscountStrategy(this.type);
+    this.discountStrategy = DiscountFactory.getDiscountStrategy(this.type);
   }
 
   getName(): string {
