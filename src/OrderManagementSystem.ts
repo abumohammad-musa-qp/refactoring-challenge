@@ -13,8 +13,8 @@ export class OrderManagementSystem {
     order.addItem("Keyboard", 80);
 
     const orderSummary = order.getOrderSummary();
-    OrderManagementSystem.printOrderSummary(orderSummary);
-    OrderManagementSystem.generateInvoice(orderSummary);
+    this.printOrderSummary(orderSummary);
+    this.generateInvoice(orderSummary);
   }
 
   private static printOrderSummary(summary: OrderSummary): void {
