@@ -8,7 +8,7 @@ import {
 } from "../strategies/discounts";
 
 export class DiscountFactory {
-  static createDiscountStrategy(type: CustomerType): DiscountStrategy {
+  static getDiscountStrategy(type: CustomerType): DiscountStrategy {
     switch (type) {
       case CustomerType.REGULAR:
         return new RegularDiscount();
